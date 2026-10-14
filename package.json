@@ -1,0 +1,23 @@
+{
+  "name": "military-asset-management-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Military Asset Management System with Relational SQL Ledger, RBAC, and React Frontend",
+  "scripts": {
+    "dev": "node run.js",
+    "start": "node run.js",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build:frontend": "npm --prefix frontend run build",
+    "test:api": "node backend/test-api.js"
+  },
+  "keywords": [
+    "asset-management",
+    "military-logistics",
+    "rbac",
+    "react",
+    "express",
+    "sqlite"
+  ],
+  "author": "Candidate Submission"
+}

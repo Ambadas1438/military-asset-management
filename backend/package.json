@@ -1,0 +1,23 @@
+{
+  "name": "military-asset-management-backend",
+  "version": "1.0.0",
+  "description": "Secure Military Asset Management System API with Relational Ledger and RBAC",
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-strip-types src/server.ts",
+    "dev": "npx tsx watch src/server.ts"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
