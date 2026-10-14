@@ -87,14 +87,16 @@ export const api = {
   },
 
   // Purchases
-  getPurchases: (filters = {}) => {
+  getPurchases: async (filters = {}) => {
     const params = new URLSearchParams();
     if (filters.baseId) params.append('baseId', filters.baseId);
     if (filters.categoryId) params.append('categoryId', filters.categoryId);
     if (filters.startDate) params.append('startDate', filters.startDate);
     if (filters.endDate) params.append('endDate', filters.endDate);
     if (filters.search) params.append('search', filters.search);
-    return request(`/purchases?${params.toString()}`);
+    const res = await request(`/purchases?${params.toString()}`);
+    const purchases = Array.isArray(res) ? res : (res.purchases || []);
+    return { purchases };
   },
   recordPurchase: (data) => request('/purchases', {
     method: 'POST',
@@ -102,7 +104,7 @@ export const api = {
   }),
 
   // Transfers
-  getTransfers: (filters = {}) => {
+  getTransfers: async (filters = {}) => {
     const params = new URLSearchParams();
     if (filters.baseId) params.append('baseId', filters.baseId);
     if (filters.categoryId) params.append('categoryId', filters.categoryId);
@@ -110,7 +112,9 @@ export const api = {
     if (filters.startDate) params.append('startDate', filters.startDate);
     if (filters.endDate) params.append('endDate', filters.endDate);
     if (filters.search) params.append('search', filters.search);
-    return request(`/transfers?${params.toString()}`);
+    const res = await request(`/transfers?${params.toString()}`);
+    const transfers = Array.isArray(res) ? res : (res.transfers || []);
+    return { transfers };
   },
   initiateTransfer: (data) => request('/transfers', {
     method: 'POST',
@@ -121,13 +125,15 @@ export const api = {
   }),
 
   // Assignments
-  getAssignments: (filters = {}) => {
+  getAssignments: async (filters = {}) => {
     const params = new URLSearchParams();
     if (filters.baseId) params.append('baseId', filters.baseId);
     if (filters.categoryId) params.append('categoryId', filters.categoryId);
     if (filters.status) params.append('status', filters.status);
     if (filters.search) params.append('search', filters.search);
-    return request(`/assignments?${params.toString()}`);
+    const res = await request(`/assignments?${params.toString()}`);
+    const assignments = Array.isArray(res) ? res : (res.assignments || []);
+    return { assignments };
   },
   assignAsset: (data) => request('/assignments', {
     method: 'POST',
@@ -138,14 +144,16 @@ export const api = {
   }),
 
   // Expenditures
-  getExpenditures: (filters = {}) => {
+  getExpenditures: async (filters = {}) => {
     const params = new URLSearchParams();
     if (filters.baseId) params.append('baseId', filters.baseId);
     if (filters.categoryId) params.append('categoryId', filters.categoryId);
     if (filters.type) params.append('type', filters.type);
     if (filters.startDate) params.append('startDate', filters.startDate);
     if (filters.endDate) params.append('endDate', filters.endDate);
-    return request(`/assignments/expenditures?${params.toString()}`);
+    const res = await request(`/assignments/expenditures?${params.toString()}`);
+    const expenditures = Array.isArray(res) ? res : (res.expenditures || []);
+    return { expenditures };
   },
   recordExpenditure: (data) => request('/assignments/expenditures', {
     method: 'POST',
@@ -153,12 +161,14 @@ export const api = {
   }),
 
   // Audit Logs
-  getAuditLogs: (filters = {}) => {
+  getAuditLogs: async (filters = {}) => {
     const params = new URLSearchParams();
     if (filters.baseId) params.append('baseId', filters.baseId);
     if (filters.action) params.append('action', filters.action);
     if (filters.entityType) params.append('entityType', filters.entityType);
     if (filters.limit) params.append('limit', filters.limit.toString());
-    return request(`/audit?${params.toString()}`);
+    const res = await request(`/audit?${params.toString()}`);
+    const logs = Array.isArray(res) ? res : (res.logs || []);
+    return { logs, total: res.total || logs.length };
   }
 };

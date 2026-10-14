@@ -20,11 +20,12 @@ import java.util.List;
 public class AssignmentsController {
 
     @Autowired private AssignmentRepository assignmentRepository;
+    @Autowired private com.military.assets.repository.ExpenditureRepository expenditureRepository;
     @Autowired private AssignmentService assignmentService;
     @Autowired private AuditService auditService;
 
     @GetMapping
-    public ResponseEntity<List<Assignment>> listAssignments(
+    public ResponseEntity<?> listAssignments(
             @RequestParam(required = false) String baseId,
             @RequestParam(required = false) String status,
             HttpServletRequest request) {
@@ -32,7 +33,8 @@ public class AssignmentsController {
         if (user != null && "commander".equals(user.getRole()) && user.getBase() != null) {
             baseId = user.getBase().getId();
         }
-        return ResponseEntity.ok(assignmentRepository.findByFilters(baseId, status));
+        List<Assignment> list = assignmentRepository.findByFilters(baseId, status);
+        return ResponseEntity.ok(java.util.Map.of("assignments", list));
     }
 
     @PostMapping
@@ -45,7 +47,7 @@ public class AssignmentsController {
         return ResponseEntity.ok(assignment);
     }
 
-    @PatchMapping("/{id}/return")
+    @RequestMapping(value = "/{id}/return", method = {RequestMethod.PATCH, RequestMethod.POST})
     public ResponseEntity<?> returnAssignment(@PathVariable String id, HttpServletRequest request) {
         User user = (User) request.getAttribute("currentUser");
         Assignment assignment = assignmentService.returnAssignment(id);
@@ -53,6 +55,19 @@ public class AssignmentsController {
             "{\"code\":\"" + assignment.getAssignmentCode() + "\"}",
             request.getRemoteAddr());
         return ResponseEntity.ok(assignment);
+    }
+
+    @GetMapping("/expenditures")
+    public ResponseEntity<?> listExpenditures(
+            @RequestParam(required = false) String baseId,
+            @RequestParam(required = false) String categoryId,
+            HttpServletRequest request) {
+        User user = (User) request.getAttribute("currentUser");
+        if (user != null && "commander".equals(user.getRole()) && user.getBase() != null) {
+            baseId = user.getBase().getId();
+        }
+        List<Expenditure> list = expenditureRepository.findByFilters(baseId, categoryId);
+        return ResponseEntity.ok(java.util.Map.of("expenditures", list));
     }
 
     @PostMapping("/expenditures")

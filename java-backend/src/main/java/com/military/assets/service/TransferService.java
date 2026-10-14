@@ -54,14 +54,15 @@ public class TransferService {
         transfer.setCreatedAt(LocalDateTime.now());
         transferRepository.save(transfer);
 
+        // Reduce origin inventory for any initiated transfer (whether COMPLETED or IN_TRANSIT)
+        inventoryItemRepository.findByBase_IdAndCategory_IdAndAssetName(req.getOriginBaseId(), req.getCategoryId(), req.getAssetName()).ifPresent(inv -> {
+            inv.setCurrentQuantity(Math.max(0, inv.getCurrentQuantity() - req.getQuantity()));
+            inv.setUpdatedAt(LocalDateTime.now());
+            inventoryItemRepository.save(inv);
+        });
+
         if ("COMPLETED".equals(transfer.getStatus())) {
-            // Reduce origin inventory
-            inventoryItemRepository.findByBase_IdAndCategory_IdAndAssetName(req.getOriginBaseId(), req.getCategoryId(), req.getAssetName()).ifPresent(inv -> {
-                inv.setCurrentQuantity(Math.max(0, inv.getCurrentQuantity() - req.getQuantity()));
-                inv.setUpdatedAt(LocalDateTime.now());
-                inventoryItemRepository.save(inv);
-            });
-            // Increase destination inventory
+            // Increase destination inventory immediately
             InventoryItem destInv = inventoryItemRepository
                 .findByBase_IdAndCategory_IdAndAssetName(req.getDestinationBaseId(), req.getCategoryId(), req.getAssetName())
                 .orElseGet(() -> {
@@ -80,6 +81,41 @@ public class TransferService {
             inventoryItemRepository.save(destInv);
         }
 
+        return transfer;
+    }
+
+    @Transactional
+    public Transfer receiveTransfer(String transferId, User currentUser) {
+        Transfer transfer = transferRepository.findById(transferId)
+            .orElseThrow(() -> new RuntimeException("Transfer not found: " + transferId));
+        if ("COMPLETED".equals(transfer.getStatus())) {
+            return transfer;
+        }
+
+        transfer.setStatus("COMPLETED");
+        if (currentUser != null) {
+            transfer.setReceivedBy(currentUser);
+        }
+
+        // Increase destination inventory
+        InventoryItem destInv = inventoryItemRepository
+            .findByBase_IdAndCategory_IdAndAssetName(transfer.getDestinationBase().getId(), transfer.getCategory().getId(), transfer.getAssetName())
+            .orElseGet(() -> {
+                InventoryItem newInv = new InventoryItem();
+                newInv.setId("inv-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8));
+                newInv.setBase(transfer.getDestinationBase());
+                newInv.setCategory(transfer.getCategory());
+                newInv.setAssetName(transfer.getAssetName());
+                newInv.setInitialBalance(0);
+                newInv.setCurrentQuantity(0);
+                newInv.setMinimumThreshold(0);
+                return newInv;
+            });
+        destInv.setCurrentQuantity(destInv.getCurrentQuantity() + transfer.getQuantity());
+        destInv.setUpdatedAt(LocalDateTime.now());
+        inventoryItemRepository.save(destInv);
+
+        transferRepository.save(transfer);
         return transfer;
     }
 }

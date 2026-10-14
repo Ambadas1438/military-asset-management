@@ -20,13 +20,13 @@ public class Transfer {
     private String id;
     @Column(name = "tracking_number", unique = true)
     private String trackingNumber;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "origin_base_id")
     private Base originBase;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "destination_base_id")
     private Base destinationBase;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private EquipmentCategory category;
     @Column(name = "asset_name")
@@ -37,10 +37,10 @@ public class Transfer {
     private String transportMode;
     @Column(name = "transfer_date")
     private LocalDate transferDate;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "initiated_by")
     private User initiatedBy;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "received_by")
     private User receivedBy;
     private String notes;

@@ -45,16 +45,27 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req, HttpServletRequest request) {
         if (req.getEmail() == null || req.getEmail().isBlank()) {
-            return ResponseEntity.status(400).body(Map.of("error", "Email is required"));
+            return ResponseEntity.status(400).body(Map.of("error", "Email or username is required"));
         }
         User user = userRepository.findByEmailIgnoreCase(req.getEmail().trim())
             .orElseGet(() -> userRepository.findByUsernameIgnoreCase(req.getEmail().trim()).orElse(null));
         if (user == null) {
             return ResponseEntity.status(401).body(Map.of(
                 "error", "Invalid credentials",
-                "message", "No account found. Please register or use a demo account."
+                "message", "No account found with that email or username. Please check your credentials or register."
             ));
         }
+
+        // Validate password if user has a password set
+        if (req.getPassword() != null && !req.getPassword().isBlank()) {
+            if (user.getPassword() != null && !user.getPassword().isBlank() && !user.getPassword().equals(req.getPassword().trim())) {
+                return ResponseEntity.status(401).body(Map.of(
+                    "error", "Invalid credentials",
+                    "message", "Incorrect password. Please try again."
+                ));
+            }
+        }
+
         String token = "mil-jwt-" + user.getId() + "-" + System.currentTimeMillis();
         auditService.log(user, "USER_LOGIN", "User", user.getId(), "{\"action\":\"login\"}", request.getRemoteAddr());
         return ResponseEntity.ok(new LoginResponse(token, toDto(user)));
@@ -82,6 +93,7 @@ public class AuthController {
         String name     = body.get("name");
         String email    = body.get("email");
         String username = body.get("username");
+        String password = body.get("password");
         String role     = body.get("role");
         String rank     = body.get("rank");
         String baseId   = body.get("baseId");
@@ -113,6 +125,7 @@ public class AuthController {
         user.setName(name.trim());
         user.setEmail(email.trim().toLowerCase());
         user.setUsername(username.trim().toLowerCase());
+        user.setPassword((password != null && !password.isBlank()) ? password.trim() : "password123");
         user.setRole(finalRole);
         user.setRank(rank != null ? rank.trim() : "Civilian");
         user.setServiceNumber("SN-NEW-" + System.currentTimeMillis() % 100000);

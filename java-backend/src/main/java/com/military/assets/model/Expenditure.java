@@ -20,10 +20,10 @@ public class Expenditure {
     private String id;
     @Column(name = "expenditure_code", unique = true)
     private String expenditureCode;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "base_id")
     private Base base;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private EquipmentCategory category;
     @Column(name = "asset_name")
@@ -35,7 +35,7 @@ public class Expenditure {
     private LocalDate expenditureDate;
     @Column(name = "mission_ref")
     private String missionRef;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "authorized_by")
     private User authorizedBy;
     @Column(name = "after_action_report", columnDefinition = "TEXT")

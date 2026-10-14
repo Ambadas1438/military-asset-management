@@ -13,6 +13,10 @@ $MVN = "C:\Program Files\Apache NetBeans\java\maven\bin\mvn.cmd"
 if (-not (Test-Path $MVN)) {
     $MVN = "C:\Users\ADMIN\.m2\wrapper\dists\apache-maven-3.9.16-bin\5grr65jo27hi51sujmtcldfovl\apache-maven-3.9.16\bin\mvn.cmd"
 }
+if (-not (Test-Path $MVN)) {
+    $cmd = Get-Command mvn -ErrorAction SilentlyContinue
+    if ($cmd) { $MVN = $cmd.Source }
+}
 
 Write-Host ""
 Write-Host "=======================================================" -ForegroundColor Cyan
@@ -54,9 +58,15 @@ Write-Host "  Credentials for Demo:" -ForegroundColor Yellow
 Write-Host "    - Admin:              a.vance@military.gov / password123" -ForegroundColor Gray
 Write-Host "    - Base Commander A:   s.miller@sentinel.mil / password123" -ForegroundColor Gray
 Write-Host "    - Logistics Officer:  a.carter@logistics.mil / password123" -ForegroundColor Gray
-Write-Host "    - Or use 1-Click Quick Login & New User Signup!" -ForegroundColor Magenta
+Write-Host "    - Or use 1-Click Quick Login & New User Sign Up (Custom Passwords Supported)!" -ForegroundColor Magenta
 Write-Host "=======================================================" -ForegroundColor Cyan
 Write-Host ""
+
+# Auto launch browser once server is ready
+Start-Job -ScriptBlock {
+    Start-Sleep -Seconds 7
+    Start-Process "http://localhost:5000"
+} | Out-Null
 
 Set-Location $BACKEND
 & $MVN spring-boot:run

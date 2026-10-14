@@ -1,36 +1,41 @@
 import { spawn } from 'node:child_process';
 import path from 'node:path';
+import fs from 'node:fs';
 
 console.log('========================================================');
-console.log('🛡️  STARTING MILITARY ASSET MANAGEMENT SYSTEM');
-console.log('📡  Backend:  http://localhost:5000');
-console.log('💻  Frontend: http://localhost:5173');
+console.log('🛡️  ARES MILITARY ASSET MANAGEMENT SYSTEM');
+console.log('⚡  Stack: Java 17 Spring Boot + React Vite + MySQL');
+console.log('📡  Backend URL:  http://localhost:5000');
+console.log('💻  Frontend App: http://localhost:5000 (Integrated)');
 console.log('========================================================\n');
 
-// 1. Launch Backend API (Express + TypeScript + SQLite)
-const backend = spawn('npx', ['tsx', 'src/server.ts'], {
-  cwd: path.resolve(process.cwd(), 'backend'),
+// 1. Locate Maven executable
+const netbeansMvn = 'C:\\Program Files\\Apache NetBeans\\java\\maven\\bin\\mvn.cmd';
+const userMvn = path.join(
+  process.env.USERPROFILE || 'C:\\Users\\ADMIN',
+  '.m2\\wrapper\\dists\\apache-maven-3.9.16-bin\\5grr65jo27hi51sujmtcldfovl\\apache-maven-3.9.16\\bin\\mvn.cmd'
+);
+
+let mvnCmd = 'mvn';
+if (fs.existsSync(netbeansMvn)) {
+  mvnCmd = netbeansMvn;
+} else if (fs.existsSync(userMvn)) {
+  mvnCmd = userMvn;
+}
+
+// 2. Launch Spring Boot Backend
+const backend = spawn(mvnCmd, ['spring-boot:run'], {
+  cwd: path.resolve(process.cwd(), 'java-backend'),
   stdio: 'inherit',
   shell: true
 });
 
-// 2. Launch Frontend (React + Vite)
-const frontend = spawn('npx', ['vite', '--port', '5173', '--host'], {
-  cwd: path.resolve(process.cwd(), 'frontend'),
-  stdio: 'inherit',
-  shell: true
-});
-
-// Clean shutdown handler
-process.on('SIGINT', () => {
+// 3. Clean shutdown handler
+const shutdown = () => {
   console.log('\n[ARES] Shutting down services...');
   backend.kill();
-  frontend.kill();
   process.exit(0);
-});
+};
 
-process.on('SIGTERM', () => {
-  backend.kill();
-  frontend.kill();
-  process.exit(0);
-});
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);

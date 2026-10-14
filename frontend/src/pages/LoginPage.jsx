@@ -25,6 +25,7 @@ export default function LoginPage({ onLoginSuccess, bases = [] }) {
     name: '',
     email: '',
     username: '',
+    password: '',
     role: 'commander',
     baseId: bases[0]?.id || 'base-alpha',
     rank: 'Captain (O-3)',
@@ -118,8 +119,8 @@ export default function LoginPage({ onLoginSuccess, bases = [] }) {
     setError('');
     setSuccessMsg('');
 
-    if (!signupData.name.trim() || !signupData.email.trim() || !signupData.username.trim()) {
-      setError('Please fill in all required fields');
+    if (!signupData.name.trim() || !signupData.email.trim() || !signupData.username.trim() || !signupData.password.trim()) {
+      setError('Please fill in all required fields including password');
       return;
     }
 
@@ -221,7 +222,7 @@ export default function LoginPage({ onLoginSuccess, bases = [] }) {
                     <input
                       type="text"
                       required
-                      placeholder="e.g. a.vance@military.gov"
+                      placeholder="e.g. a.vance@military.gov or ambadas or general.vance"
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-600 focus:outline-none"
@@ -230,9 +231,12 @@ export default function LoginPage({ onLoginSuccess, bases = [] }) {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Security Passcode
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold text-slate-700 uppercase">
+                      Security Passcode / Password
+                    </label>
+                    <span className="text-[10px] text-slate-500 font-medium">Default: password123</span>
+                  </div>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                       <Lock className="w-4 h-4" />
@@ -240,6 +244,7 @@ export default function LoginPage({ onLoginSuccess, bases = [] }) {
                     <input
                       type="password"
                       required
+                      placeholder="Enter password"
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-600 focus:outline-none"
@@ -343,6 +348,25 @@ export default function LoginPage({ onLoginSuccess, bases = [] }) {
                   onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-red-600 focus:outline-none"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  Security Passcode / Password *
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <Lock className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="password"
+                    required
+                    placeholder="Create your security password (e.g. Ambu@2004 or password123)"
+                    value={signupData.password}
+                    onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-red-600 focus:outline-none"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

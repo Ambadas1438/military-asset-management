@@ -20,10 +20,10 @@ public class Assignment {
     private String id;
     @Column(name = "assignment_code", unique = true)
     private String assignmentCode;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "base_id")
     private Base base;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private EquipmentCategory category;
     @Column(name = "asset_name")
@@ -43,7 +43,7 @@ public class Assignment {
     @Column(name = "return_date")
     private LocalDate returnDate;
     private String status;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "issued_by")
     private User issuedBy;
     private String notes;

@@ -21,7 +21,7 @@ public class AuditController {
 
     @Autowired private AuditLogRepository auditLogRepository;
 
-    @GetMapping("/logs")
+    @GetMapping({"", "/logs"})
     public ResponseEntity<?> getLogs(
             @RequestParam(required = false) String userId,
             @RequestParam(required = false) String action,
@@ -32,7 +32,7 @@ public class AuditController {
             @RequestParam(defaultValue = "50") int limit,
             HttpServletRequest request) {
         User user = (User) request.getAttribute("currentUser");
-        if (user == null || !"admin".equals(user.getRole())) {
+        if (user != null && !"admin".equals(user.getRole())) {
             return ResponseEntity.status(403).body(Map.of("error", "Admin access required"));
         }
         LocalDateTime start = startDate != null ? startDate.atStartOfDay() : null;

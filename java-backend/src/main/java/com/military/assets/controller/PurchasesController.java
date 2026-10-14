@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/purchases")
@@ -24,7 +25,7 @@ public class PurchasesController {
     @Autowired private AuditService auditService;
 
     @GetMapping
-    public ResponseEntity<List<Purchase>> listPurchases(
+    public ResponseEntity<?> listPurchases(
             @RequestParam(required = false) String baseId,
             @RequestParam(required = false) String categoryId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -34,7 +35,8 @@ public class PurchasesController {
         if (user != null && "commander".equals(user.getRole()) && user.getBase() != null) {
             baseId = user.getBase().getId();
         }
-        return ResponseEntity.ok(purchaseRepository.findByFilters(baseId, categoryId, startDate, endDate));
+        List<Purchase> list = purchaseRepository.findByFilters(baseId, categoryId, startDate, endDate);
+        return ResponseEntity.ok(Map.of("purchases", list));
     }
 
     @PostMapping

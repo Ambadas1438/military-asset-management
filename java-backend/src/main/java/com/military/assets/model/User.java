@@ -21,7 +21,7 @@ public class User {
     private String name;
     private String email;
     private String role;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "base_id")
     private Base base;
     @Column(name = "military_rank")
@@ -29,6 +29,22 @@ public class User {
     @Column(name = "service_number")
     private String serviceNumber;
     private String avatar;
+    @Column(name = "password")
+    private String password;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    public User(String id, String username, String name, String email, String role, Base base, String rank, String serviceNumber, String avatar, LocalDateTime createdAt) {
+        this.id = id;
+        this.username = username;
+        this.name = name;
+        this.email = email;
+        this.role = role;
+        this.base = base;
+        this.rank = rank;
+        this.serviceNumber = serviceNumber;
+        this.avatar = avatar;
+        this.createdAt = createdAt;
+        this.password = "password123";
+    }
 }

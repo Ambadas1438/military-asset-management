@@ -6,10 +6,9 @@
   "scripts": {
     "dev": "node run.js",
     "start": "node run.js",
-    "dev:backend": "npm --prefix backend run dev",
+    "dev:backend": "powershell -File run.ps1",
     "dev:frontend": "npm --prefix frontend run dev",
-    "build:frontend": "npm --prefix frontend run build",
-    "test:api": "node backend/test-api.js"
+    "build:frontend": "npm --prefix frontend run build"
   },
   "keywords": [
     "asset-management",

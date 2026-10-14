@@ -20,10 +20,10 @@ public class Purchase {
     private String id;
     @Column(name = "purchase_order", unique = true)
     private String purchaseOrder;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "base_id")
     private Base base;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private EquipmentCategory category;
     @Column(name = "asset_name")
@@ -38,7 +38,7 @@ public class Purchase {
     private String supplier;
     @Column(name = "purchase_date")
     private LocalDate purchaseDate;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "created_by")
     private User createdBy;
     private String notes;

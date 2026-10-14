@@ -8,6 +8,7 @@ import {
   FileText,
   LogOut,
   UserCheck,
+  UserPlus,
   Building2,
   HelpCircle,
   ChevronDown
@@ -20,7 +21,8 @@ export default function Navbar({
   onOpenDemoGuide,
   onSwitchUser,
   allUsers,
-  onLogout
+  onLogout,
+  onOpenAuthPage
 }) {
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
 

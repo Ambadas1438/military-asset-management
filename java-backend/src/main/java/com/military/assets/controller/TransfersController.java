@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/transfers")
@@ -22,7 +23,7 @@ public class TransfersController {
     @Autowired private AuditService auditService;
 
     @GetMapping
-    public ResponseEntity<List<Transfer>> listTransfers(
+    public ResponseEntity<?> listTransfers(
             @RequestParam(required = false) String baseId,
             @RequestParam(required = false) String status,
             HttpServletRequest request) {
@@ -30,7 +31,8 @@ public class TransfersController {
         if (user != null && "commander".equals(user.getRole()) && user.getBase() != null) {
             baseId = user.getBase().getId();
         }
-        return ResponseEntity.ok(transferRepository.findByFilters(baseId, status));
+        List<Transfer> list = transferRepository.findByFilters(baseId, status);
+        return ResponseEntity.ok(Map.of("transfers", list));
     }
 
     @PostMapping
@@ -39,6 +41,16 @@ public class TransfersController {
         Transfer transfer = transferService.createTransfer(req, user);
         auditService.log(user, "INITIATE_TRANSFER", "Transfer", transfer.getId(),
             "{\"trackingNumber\":\"" + transfer.getTrackingNumber() + "\",\"quantity\":" + transfer.getQuantity() + "}",
+            request.getRemoteAddr());
+        return ResponseEntity.ok(transfer);
+    }
+
+    @RequestMapping(value = "/{id}/receive", method = {RequestMethod.PATCH, RequestMethod.POST})
+    public ResponseEntity<?> receiveTransfer(@PathVariable String id, HttpServletRequest request) {
+        User user = (User) request.getAttribute("currentUser");
+        Transfer transfer = transferService.receiveTransfer(id, user);
+        auditService.log(user, "RECEIVE_TRANSFER", "Transfer", transfer.getId(),
+            "{\"trackingNumber\":\"" + transfer.getTrackingNumber() + "\",\"status\":\"COMPLETED\"}",
             request.getRemoteAddr());
         return ResponseEntity.ok(transfer);
     }

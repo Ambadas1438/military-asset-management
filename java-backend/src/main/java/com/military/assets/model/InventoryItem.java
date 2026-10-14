@@ -16,10 +16,10 @@ public class InventoryItem {
     @Id
     @Column(length = 100)
     private String id;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "base_id")
     private Base base;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private EquipmentCategory category;
     @Column(name = "asset_name")
